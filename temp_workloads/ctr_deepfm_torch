@@ -1,0 +1,6 @@
+#!/bin/bash
+eval "$(conda shell.bash hook)"
+conda activate my_tf
+# source ~/pramod/set_gpu_limits.sh '0=4G' 33
+home="/home/ub-11/mitali/FuxiCTR/model_zoo"
+cd $home/DeepFM/DeepFM_torch && python run_expid.py --expid DeepFM_test --gpu 0 && cd /home/ub-11/mitali/workload_executables

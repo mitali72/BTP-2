@@ -1,0 +1,31 @@
+#!/bin/bash
+# Colocated functions n
+n=$1
+mem=$((16384/4))
+cores=$((100/4))
+
+source ~/pramod/set_gpu_limits.sh "0=${mem}MB" $cores%
+# for((iter=1;iter<=4;iter++))
+# do  
+#     echo "evaluating for n = ${iter}">>log_homo_particle
+#     cmd="time (/home/ub-11/mitali/rodinia_3.1/cuda/particlefilter/particlefilter_float -x 128 -y 128 -z 10 -np 1000000) &>> log_homo_particle&"
+#     final_cmd=''
+#     for((c=1;c<=$iter;c++))
+#     do
+#         final_cmd="$final_cmd $cmd"
+#     done
+#     eval $final_cmd
+#     wait
+# done
+
+iter=3 
+echo "evaluating for n = ${iter}"
+cmd="time /home/ub-11/mitali/rodinia_3.1/cuda/particlefilter/particlefilter_float -x 128 -y 128 -z 10 -np 1000000 &"
+final_cmd=''
+for((c=1;c<=${iter};c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+# printenv
+eval $final_cmd
+wait

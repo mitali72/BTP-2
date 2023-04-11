@@ -1,0 +1,24 @@
+#!/bin/bash
+# Colocated functions n
+
+TIMEFORMAT=%R
+# n=$1
+mem=$((16384/8))
+cores=$((100/8))
+source /home/ub-11/mitali/image_recognition/env/bin/activate
+source ~/pramod/set_gpu_limits.sh "0=${mem}MB" $cores%
+for((iter=1;iter<=8;iter++))
+do  
+    echo "evaluating for n = ${iter}">>log_low
+    cmd="time (python3 /home/ub-11/mitali/image_recognition/resnet50_pytorch.py --batch-size 1 --total-images 2500) &>> log_low&"
+    final_cmd=''
+    for((c=1;c<=$iter;c++))
+    do
+        final_cmd="$final_cmd $cmd"
+    done
+    eval $final_cmd
+    wait
+done
+# time (python3 /home/ub-11/mitali/image_recognition/resnet50_pytorch.py --batch-size 1 --total-images 2500) &>> record1 &
+# time (python3 /home/ub-11/mitali/image_recognition/resnet50_pytorch.py --batch-size 1 --total-images 2500) &>> record1 &
+wait

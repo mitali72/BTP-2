@@ -1,0 +1,23 @@
+#!/bin/bash
+# . "$HOME/anaconda3/etc/profile.d/conda.sh"
+eval "$(conda shell.bash hook)"
+conda activate my_tf
+source ~/mitali/scripts/setup_gpu_limit.sh $1%
+# max colocation 5, mem req = 3663MB
+
+# number of processes co-located = $2
+cmd="python3 $HOME/mitali/workloads/vgg16_pytorch.py --batch-size 32 >/dev/null 2>&1 &"
+ 
+final_cmd=''
+for((c=1;c<=$2;c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+
+start=$(date +%s.%3N)
+# python3 $HOME/mitali/workloads/vgg16_pytorch.py --batch-size 32
+eval $final_cmd
+wait
+end=$(date +%s.%3N)
+runtime=$(echo $end $start | awk '{print $1 - $2}')
+echo $runtime

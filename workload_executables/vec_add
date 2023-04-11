@@ -1,0 +1,19 @@
+#!/bin/bash
+# max colocation 48
+
+source ~/mitali/scripts/setup_gpu_limit.sh $1%
+# echo $CUDA_MPS_ACTIVE_THREAD_PERCENTAGE
+cmd="$HOME/mitali/workloads/vec_add >/dev/null 2>&1 &"
+ 
+final_cmd=''
+for((c=1;c<=$2;c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+
+start=$(date +%s.%3N)
+eval $final_cmd
+wait
+end=$(date +%s.%3N)
+runtime=$(echo $end $start | awk '{print $1 - $2}')
+echo $runtime

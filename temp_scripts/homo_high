@@ -1,0 +1,16 @@
+#!/bin/bash
+# Colocated functions n
+n=$1
+mem=$((16384/n))
+cores=$((100/n))
+
+source ~/pramod/set_gpu_limits.sh "0=${mem}MB" $cores%
+cmd='/home/ub-11/pramod/gpu_benchmarks/OpenForBC-Benchmark/benchmarks/blender_benchmark/bin/benchmark-launcher-cli benchmark --json -b 3.3.0 --device-type CUDA classroom &'
+final_cmd=''
+for((c=1;c<=$n;c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+
+eval $final_cmd
+wait

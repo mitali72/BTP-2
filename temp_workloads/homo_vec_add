@@ -1,0 +1,32 @@
+#!/bin/bash
+# Colocated functions n
+
+TIMEFORMAT=%R
+# n=$1
+mem=$((16384/4))
+cores=$((100/4))
+# source /home/ub-11/mitali/image_recognition/env/bin/activate
+source ~/pramod/set_gpu_limits.sh "0=${mem}MB" $cores%
+# for((iter=1;iter<=4;iter++))
+# do  
+#     echo "evaluating for n = ${iter}">>log_vec_add
+#     cmd="time (/home/ub-11/mitali/workloads/vec_add) &>> log_vec_add&"
+#     final_cmd=''
+#     for((c=1;c<=$iter;c++))
+#     do
+#         final_cmd="$final_cmd $cmd"
+#     done
+#     eval $final_cmd
+#     wait
+# done
+iter=3 
+echo "evaluating for n = ${iter}"
+cmd="time /home/ub-11/mitali/workloads/vec_add &"
+final_cmd=''
+for((c=1;c<=${iter};c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+# printenv
+eval $final_cmd
+wait

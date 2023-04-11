@@ -1,0 +1,37 @@
+#!/bin/bash
+# Colocated functions n
+
+TIMEFORMAT=%R
+# n=$1
+# mem=$((16384/4))
+# cores=$((100/4))
+eval "$(conda shell.bash hook)"
+conda activate my_tf
+# source ~/pramod/set_gpu_limits.sh "0=${mem}MB" $cores%
+batch_max=1
+for((batch=1;batch<=${batch_max};batch++))
+do  
+    echo "evaluating for batch size = ${batch}">>log_vec_add
+    # cmd="python3 /home/ub-11/mitali/workloads/resent50_pytorch.py --batch-size ${batch} &>> log_resent50_pytorch&"
+    cmd="python3 /home/ub-11/mitali/workloads/resent50_pytorch.py --batch-size ${batch} & "
+    nsight_cmd="nsys profile --cpuctxsw system-wide --trace cuda,cudnn --cuda-memory-usage true --cuda-um-cpu-page-faults true --cuda-um-gpu-page-faults true --gpu-metrics-device all -o test_report.nsys-rep --force-overwrite true python3 /home/ub-11/mitali/workloads/resnet50_pytorch.py --batch-size ${batch}"
+    final_cmd=''
+    final_cmd="$final_cmd $cmd $nsight_cmd"
+    eval $final_cmd
+    wait
+done
+# batch_max=1 
+# echo "evaluating for batch size = ${iter}"
+# cmd="time /home/ub-11/mitali/workloads/vec_add &"
+# final_cmd=''
+# for((c=1;c<=${iter};c++))
+# do
+#     final_cmd="$final_cmd $cmd"
+# done
+# # printenv
+# eval $final_cmd
+# wait
+
+# sqlite report or set "--stats=true" in nsys profile
+# nsys stats test_report.nsys-rep
+# sqlite3 -header -csv test_report.sqlite "SELECT rawTimestamp, JSON_EXTRACT(data, '$.SM Active') as SMsActive, JSON_EXTRACT(data, '$.PCIe TX Throughput') as PCIeTxThr, JSON_EXTRACT(data, '$.PCIe RX Throughput') as PCIeRxThr from GENERIC_EVENTS LIMIT 10" > test.csv

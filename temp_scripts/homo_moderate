@@ -1,0 +1,16 @@
+#!/bin/bash
+# Colocated functions n
+n=$1
+mem=$((16/n))
+cores=$((100/n))
+
+source ~/pramod/set_gpu_limits.sh "0=${mem}G" $cores%
+cmd=''
+final_cmd='/home/ub-11/mitali/rodinia_3.1/cuda/srad/srad_v1/srad 1000000 0.5 128 128'
+for((c=1;c<=$n;c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+
+eval $final_cmd
+wait

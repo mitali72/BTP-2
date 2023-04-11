@@ -1,0 +1,40 @@
+#!/bin/bash
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+# __conda_setup="$('~/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/home/vgpu-1/anaconda3/etc/profile.d/conda.sh" ]; then
+#         . "/home/vgpu-1/anaconda3/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/home/vgpu-1/anaconda3/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# <<< conda initialize <<<
+# export PATH="~/anaconda3/bin:$PATH"
+# . "$HOME/anaconda3/etc/profile.d/conda.sh"
+
+eval "$(conda shell.bash hook)"
+conda activate my_tf
+
+source ~/mitali/scripts/setup_gpu_limit.sh $1%
+# max colocated 15, mem req = 985MB (32 GB RAM oom for 24)
+home="$HOME/mitali/FuxiCTR/model_zoo"
+# number of processes co-located = $2
+cd $home/DNN/DNN_torch
+cmd="python3 run_expid.py --expid DNN_test --gpu 0 >/dev/null 2>&1 &"
+final_cmd=''
+for((c=1;c<=$2;c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+start=$(date +%s.%3N)
+# cd $home/DNN/DNN_torch && python3 run_expid.py --expid DNN_test --gpu 0 >/dev/null && cd $HOME/mitali/workload_executables
+eval $final_cmd
+wait
+end=$(date +%s.%3N)
+cd $HOME/mitali/workload_executables
+runtime=$(echo $end $start | awk '{print $1 - $2}')
+echo $runtime

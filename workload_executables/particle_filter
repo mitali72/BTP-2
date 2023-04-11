@@ -1,0 +1,17 @@
+#!/bin/bash
+# max colocation 32
+source ~/mitali/scripts/setup_gpu_limit.sh $1%
+# number of processes co-located = $2, mem req = 541 MB
+cmd="$HOME/mitali/rodinia_3.1/cuda/particlefilter/particlefilter_float -x 128 -y 128 -z 10 -np 1000000 >/dev/null 2>&1 &"
+final_cmd=''
+for((c=1;c<=$2;c++))
+do
+    final_cmd="$final_cmd $cmd"
+done
+start=$(date +%s.%3N)
+# $HOME/mitali/rodinia_3.1/cuda/particlefilter/particlefilter_float -x 128 -y 128 -z 10 -np 1000000
+eval $final_cmd
+wait
+end=$(date +%s.%3N)
+runtime=$(echo $end $start | awk '{print $1 - $2}')
+echo $runtime

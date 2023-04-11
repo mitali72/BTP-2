@@ -1,0 +1,2 @@
+#!/bin/bash
+export CUDA_MPS_ACTIVE_THREAD_PERCENTAGE=$1
